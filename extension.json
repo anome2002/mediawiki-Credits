@@ -1,0 +1,26 @@
+{
+	"name": "Credits",
+	"version": "0.1.0",
+	"author": [
+		"Edgar Agayi"
+	],
+	"description": "Adds a credits extension tag that displays article contributors.",
+	"url": "https://www.mediawiki.org",
+	"license-name": "GPL-3.0-or-later",
+	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.35.0"
+	},
+	"MessagesDirs": {
+		"Credits": [
+			"i18n"
+		]
+	},
+	"AutoloadClasses": {
+		"CreditsHooks": "CreditsHooks.php"
+	},
+	"Hooks": {
+		"ParserFirstCallInit": "CreditsHooks::onParserFirstCallInit"
+	},
+	"manifest_version": 2
+}
