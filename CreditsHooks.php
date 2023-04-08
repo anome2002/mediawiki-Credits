@@ -76,16 +76,18 @@ private static function getArticleContributors( $title ) {
             'actor_id = rev_actor',
             'page_title' => $title->getDBkey(),
             'page_namespace' => $title->getNamespace(),
-            'rev_actor <> 0'
+            'rev_actor <> 0',
+            'actor_user IS NOT NULL',
+            'actor_name NOT LIKE "HindupediaSysop"', // exclude contributions made by IP addresses
         ],
         __METHOD__,
         [ 'ORDER BY' => 'rev_timestamp DESC' ],
         [ 'revision' => [ 'INNER JOIN', 'rev_actor = actor_id' ] ]
     );
-$contributors = [];
-        foreach ( $revs as $rev ) {
-            $contributors[] = $rev->actor_name;
-        }
-        return $contributors;
+    $contributors = [];
+    foreach ( $revs as $rev ) {
+        $contributors[] = $rev->actor_name;
     }
+    return $contributors;
+}
 }
