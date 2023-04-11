@@ -68,28 +68,29 @@ class CreditsHooks {
  */
 private static function getArticleContributors( $title ) {
     $dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_REPLICA );
-    $revs = $dbr->select(
-        [ 'page', 'revision', 'actor', 'user_groups' ],
-        [ 'DISTINCT actor_name' ],
-        [
-            'rev_page = page_id',
-            'actor_id = rev_actor',
-            'page_title' => $title->getDBkey(),
-            'page_namespace' => $title->getNamespace(),
-            'rev_actor <> 0',
-            'actor_user IS NOT NULL',
-            'actor_name NOT LIKE "HindupediaSysop"', // exclude contributions made by IP addresses
-            'user_groups.ug_group IS NULL OR user_groups.ug_group NOT IN ("bot")' // exclude contributions made by bots
-        ],
-        __METHOD__,
-        [ 'ORDER BY' => 'rev_timestamp DESC' ],
-        [ 'revision' => [ 'INNER JOIN', 'rev_actor = actor_id' ],
-          'user_groups' => [ 'LEFT JOIN', 'actor_user=user_groups.ug_user' ] ]
-    );
-    $contributors = [];
-    foreach ( $revs as $rev ) {
-        $contributors[] = $rev->actor_name;
-    }
-    return $contributors;
+$revs = $dbr->select(
+    [ 'page', 'revision', 'actor' ],
+    [ 'DISTINCT actor_name' ],
+    [
+        'rev_page = page_id',
+        'actor_id = rev_actor',
+        'page_title' => $title->getDBkey(),
+        'page_namespace' => $title->getNamespace(),
+        'rev_actor <> 0',
+        'actor_user IS NOT NULL',
+        'actor_name NOT LIKE "HindupediaSysop"', // exclude contributions made by IP address 
+        'actor_name NOT IN ("Bilahari Akkiraju", "Redirect fixer")' 
+    ],
+    __METHOD__,
+    [ 'ORDER BY' => 'rev_timestamp DESC' ],
+    [ 'revision' => [ 'INNER JOIN', 'rev_actor = actor_id' ] ]
+);
+
+$contributors = [];
+foreach ( $revs as $rev ) {
+    $contributors[] = $rev->actor_name;
+}
+return $contributors;
+
 }
 }
