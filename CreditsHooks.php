@@ -69,7 +69,7 @@ class CreditsHooks {
 private static function getArticleContributors( $title ) {
     $dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnectionRef( DB_REPLICA );
     $revs = $dbr->select(
-        [ 'page', 'revision', 'actor' ],
+        [ 'page', 'revision', 'actor', 'user_groups' ],
         [ 'DISTINCT actor_name' ],
         [
             'rev_page = page_id',
@@ -79,10 +79,12 @@ private static function getArticleContributors( $title ) {
             'rev_actor <> 0',
             'actor_user IS NOT NULL',
             'actor_name NOT LIKE "HindupediaSysop"', // exclude contributions made by IP addresses
+            'user_groups.ug_group IS NULL OR user_groups.ug_group NOT IN ("bot", "extendedconfirmed")' // exclude contributions made by bots and extended confirmed users
         ],
         __METHOD__,
         [ 'ORDER BY' => 'rev_timestamp DESC' ],
-        [ 'revision' => [ 'INNER JOIN', 'rev_actor = actor_id' ] ]
+        [ 'revision' => [ 'INNER JOIN', 'rev_actor = actor_id' ],
+          'user_groups' => [ 'LEFT JOIN', 'actor_user=user_groups.ug_user' ] ]
     );
     $contributors = [];
     foreach ( $revs as $rev ) {
