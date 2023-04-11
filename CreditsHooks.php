@@ -44,7 +44,7 @@ class CreditsHooks {
 		$contributors = self::getArticleContributors( $title );
 		// Build output
 		$output = '<div class="credits">';
-        $output .= 'This article is yes contributed by: ';
+        $output .= '';
         foreach ($contributors as $contributor) {
             $userTitle = Title::makeTitle( NS_USER, $contributor );
             if ( $userTitle && $userTitle->exists() ) {
@@ -79,7 +79,7 @@ private static function getArticleContributors( $title ) {
             'rev_actor <> 0',
             'actor_user IS NOT NULL',
             'actor_name NOT LIKE "HindupediaSysop"', // exclude contributions made by IP addresses
-            'user_groups.ug_group IS NULL OR user_groups.ug_group NOT IN ("bot", "extendedconfirmed")' // exclude contributions made by bots and extended confirmed users
+            'user_groups.ug_group IS NULL OR user_groups.ug_group NOT IN ("bot")' // exclude contributions made by bots
         ],
         __METHOD__,
         [ 'ORDER BY' => 'rev_timestamp DESC' ],
